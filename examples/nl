@@ -1,5 +1,5 @@
 #!/bin/sh
-. ./advsh
+. ../advsh
 
 advsh
 adv_arrays
