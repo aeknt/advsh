@@ -1,0 +1,16 @@
+#!/bin/sh
+. ./advsh
+
+advsh
+adv_arrays
+
+a_declare buffer
+a_mapfile buffer < "$1"
+
+i=1
+ifs_newline
+for line in $(a_iter buffer); do
+	printf '%*d %s\n' 4 $i "$line"
+	: $((i+=1))
+done
+ifs_restore

@@ -1,0 +1,88 @@
+#!/bin/sh
+
+## basics
+
+advsh() {
+	adv_version=0.0.1
+	bckIFS="$IFS"
+	ifs_restore() {
+		IFS="$bckIFS"
+	}
+	ifs_newline() {
+		IFS='
+'
+	}
+}
+
+## loop helpers (basically seq)
+
+adv_loops() {
+	loop() {
+		__i=0
+		while [ ${__i} -le ${1} ]; do
+			echo ${__i}
+			: $((__i+=1))
+		done
+	}
+	reverse_loop() {
+		__i=${1}
+		while [ ${__i} -ge 0 ]; do
+			echo ${__i}
+			: $((__i-=1))
+		done
+	}
+
+	range() {
+		__i=${1}
+		while [ ${__i} -le ${2} ]; do
+			echo ${__i}
+			: $((__i+=1))
+		done
+	}
+	reverse_range() {
+		__i=${1}
+		while [ ${__i} -ge ${2} ]; do
+			echo ${__i}
+			: $((__i-=1))
+		done
+	}
+}
+
+adv_arrays() {
+	a_declare() {
+		eval "a_${1}_size=0"
+	}
+	a_append() {
+		eval "__size=\${a_${1}_size}"
+		eval "a_${1}_${__size}=\"${2}\""
+		eval ": $((a_${1}_size+=1))"
+	}
+	a_iter_keys() {
+		eval "__size=\${a_${1}_size}"
+		: $((__size-=1)) # the last item is always for appending
+		__i=0
+		while [ ${__i} -le ${__size} ]; do
+		    eval "echo a_${1}_${__i}"
+			: $((__i+=1))
+		done
+	}
+	a_iter() {
+		eval "__size=\${a_${1}_size}"
+		: $((__size-=1)) # the last item is always for appending
+		__i=0
+		while [ ${__i} -le ${__size} ]; do
+			eval "printf '%s\n' \${a_${1}_${__i}}"
+			: $((__i+=1))
+		done
+	}
+	a_mapfile() {
+		eval "__size=\${a_${1}_size}"
+		ifs_newline
+		while read -r line; do
+			eval "a_${1}_${__size}=\"\${line}\""
+			: $((__size+=1))
+		done
+		eval ": $((a_${1}_size+=__size))"
+		ifs_restore
+	}
+}
